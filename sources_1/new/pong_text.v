@@ -57,20 +57,23 @@ module pong_text(
        6'b001001 : char_addr_s = 7'h3A;     // ':'
        6'b001010 : char_addr_s = {3'b011, dig1};    // tens digit of p1 score
        6'b001011 : char_addr_s = {3'b011, dig0};    // ones digit of p1 score
+       
        6'b001100 : char_addr_s = 7'h20;     // ' '
        6'b001101 : char_addr_s = 7'h20;     // ' '
-       6'b001110 : char_addr_s = 7'h20;     // ' '
-       6'b001111 : char_addr_s = 7'h20;     // ' '
-       6'b010000 : char_addr_s = 7'h20;     // ' '
+       6'b001110 : char_addr_s = 7'h7e;     // 'heart'
+       // 46 43 20 54 4F 4E 54 41 52 4E
+       // FC Tontarn
+       6'b001111 : char_addr_s = 7'h46;     // 'F'
+       6'b010000 : char_addr_s = 7'h43;     // 'C'
        6'b010001 : char_addr_s = 7'h20;     // ' '
-       6'b010010 : char_addr_s = 7'h20;     // ' '
-       6'b010011 : char_addr_s = 7'h20;     // ' '
-       6'b010100 : char_addr_s = 7'h20;     // ' '
-       6'b010101 : char_addr_s = 7'h20;     // ' '
-       6'b010110 : char_addr_s = 7'h20;     // ' '
-       6'b010111 : char_addr_s = 7'h20;     // ' '
-       6'b011000 : char_addr_s = 7'h20;     // ' '
-       6'b011001 : char_addr_s = 7'h20;     // ' '
+       6'b010010 : char_addr_s = 7'h54;     // 'T'
+       6'b010011 : char_addr_s = 7'h4f;     // 'O'
+       6'b010100 : char_addr_s = 7'h4e;     // 'N'
+       6'b010101 : char_addr_s = 7'h54;     // 'T'
+       6'b010110 : char_addr_s = 7'h41;     // 'A'
+       6'b010111 : char_addr_s = 7'h52;     // 'R'
+       6'b011000 : char_addr_s = 7'h4e;     // 'N'
+       6'b011001 : char_addr_s = 7'h7e;     // 'heart'
        6'b011010 : char_addr_s = 7'h20;     // ' '
        6'b011011 : char_addr_s = 7'h20;     // ' '
        6'b011100 : char_addr_s = 7'h50;     // 'p'
@@ -95,7 +98,8 @@ module pong_text(
     // - used as background
     // - scale to 64 by 128 text size
     // --------------------------------------------------------------------------
-    assign logo_on = (y[9:7] == 2) && (2 <= x[9:6]) && (x[9:6] <= 7);// (3 , 6)
+    //assign logo_on = (y[9:7] == 2) && (2 <= x[9:6]) && (x[9:6] <= 7);// (3 , 6)
+    assign logo_on = (y[9:7] == 2) && (1 <= x[9:6]) && (x[9:6] <= 8);// (3 , 6)
 //    assign row_addr_s = y[4:1];
 //    assign bit_addr_s = x[3:1];
     assign row_addr_l = y[5:2]; // y[6 : 3]
@@ -121,22 +125,26 @@ module pong_text(
           endcase
     end
     else if(y[7:6] == 1) begin
-        // 50 52 45 53 45 4E 54 53
-        // Presents
-        case(x[8:5])// x[8:6]
-            4'h4 :    char_addr_l = 7'h00; //  
-            4'h5 :    char_addr_l = 7'h00; // 
-            4'h6 :    char_addr_l = 7'h50; // P
-            4'h7 :    char_addr_l = 7'h52; // R
-            4'h8 :    char_addr_l = 7'h45; // E
-            4'h9 :    char_addr_l = 7'h53; // S
-            4'ha :    char_addr_l = 7'h45; // E
-            4'hb :    char_addr_l = 7'h4e; // N
-            4'hc :    char_addr_l = 7'h54; // T
-            4'hd :    char_addr_l = 7'h53; // S
-            4'he :    char_addr_l = 7'h00; // 
-            4'hf :    char_addr_l = 7'h00; // 
-            default : char_addr_l = 7'h00; // " "
+        // 50 52 45 53 45 4E 54 53 20 50 4F 4E 47 20 4D 31
+        // presents pong m1
+        case(x[9:5])// x[8:6]
+            5'h02 :    char_addr_l = 7'h50; // P
+            5'h03 :    char_addr_l = 7'h52; // R
+            5'h04 :    char_addr_l = 7'h45; // E
+            5'h05 :    char_addr_l = 7'h53; // S
+            5'h06 :    char_addr_l = 7'h45; // E
+            5'h07 :    char_addr_l = 7'h4e; // N
+            5'h08 :    char_addr_l = 7'h54; // T
+            5'h09 :    char_addr_l = 7'h53; // S
+            5'h0a :    char_addr_l = 7'h00; // 
+            5'h0b :    char_addr_l = 7'h50; // P
+            5'h0c :    char_addr_l = 7'h4f; // O
+            5'h0d :    char_addr_l = 7'h4e; // N
+            5'h0e :    char_addr_l = 7'h47; // G
+            5'h0f :    char_addr_l = 7'h00; // 
+            5'h10 :    char_addr_l = 7'h56; // V
+            5'h11 :    char_addr_l = 7'h31; // 1
+            default : char_addr_l = 7'h30; // "0"
           endcase
     end
 //            3'o2 :    char_addr_l = 7'h4B; // K 
@@ -288,16 +296,21 @@ module pong_text(
             bit_addr = bit_addr_s;
             if(ascii_bit)
                 //text_rgb = 12'h0FF;
+                // P1 side(left side)
                 if(x[9:4] <= 12) begin
-                    text_rgb = 12'hF00; // aqua background
+                    text_rgb = 12'hF88;
                 end
-                
+                // P2 side(right side)
                 else if(x[9:4] >= 28) begin
-                    text_rgb = 12'h00F;
+                    text_rgb = 12'h0FF;
                 end
                  
+                //heart 
+                else if((x[9:4] == 5'h0E) || (x[9:4] == 5'h19)) begin
+                    text_rgb = 12'hFDD;
+                end
                 else begin
-                    text_rgb = 12'h0F0;
+                    text_rgb = 12'h0F0;// green
                 end
                 //text_rgb = 12'h111;
         end

@@ -91,6 +91,9 @@ module pong_graph(
     reg [7:0] rom_data;             // data at current rom address
     wire rom_bit;                   // signify when rom data is 1 or 0 for ball rgb control
     
+    reg [1:0]direc = 0;
+    //reg p1win , p2win = 0;
+    reg [2:0] randomNum;//$urandom_range(0,8);  
     
     // Register Control paddle
     always @(posedge clk or posedge reset)
@@ -196,89 +199,78 @@ module pong_graph(
                          (refresh_tick) ? y_ball_reg + y_delta_reg : y_ball_reg;
     
     // change ball direction after collision
-    /*
-    hit = 2 bit
-    miss = 1 bit
-    */
-    reg [1:0]direc = 2'o0;
-    reg [2:0]randomNum;//$urandom_range(0,8);
-    
-    
     always @* begin
         hit = 0;
         miss = 1'b0;
         x_delta_next = x_delta_reg;
         y_delta_next = y_delta_reg;
-        /*
-            case(hit)
-                2'b01: direc = 2'b01; // player2 score , ball go to player1
-                2'b10: direc = 2'b10; // player1 score , ball go to player2
-                default : direc = 2'b00;
-            endcase
-        */
-       if(gra_still) begin
-            //====================================================
-            case(direc)
-                2'b01: begin // player2 score , ball go to player1
-                    x_delta_next = BALL_VELOCITY_NEG;
-                    y_delta_next = BALL_VELOCITY_NEG;
-                    end
-                2'b10: begin // player1 score , ball go to player2
-                    x_delta_next = BALL_VELOCITY_POS;
-                    y_delta_next = BALL_VELOCITY_NEG;
-                    end                    
-                default:begin
-                    randomNum = $urandom_range(0,8);
-                    if(randomNum <= 4) begin
-                        x_delta_next = BALL_VELOCITY_NEG;
-                        y_delta_next = BALL_VELOCITY_POS;
-                        end
-                    else begin
-                        x_delta_next = BALL_VELOCITY_POS;
-                        y_delta_next = BALL_VELOCITY_POS;
-                    end
-                end
-            endcase
-            //====================================================
-//            x_delta_next = BALL_VELOCITY_NEG;
-//            y_delta_next = BALL_VELOCITY_POS;
-        end
-        
+//        if(gra_still) begin
+//       //direc = { x_ball_r > X_MAX,x_ball_l < 1};
+//            if(direc == 0) begin
+//                x_delta_next <= BALL_VELOCITY_NEG;
+//                y_delta_next <= BALL_VELOCITY_POS;    
+//            end
+//            else if(direc == 2) begin //10
+//                x_delta_next <= BALL_VELOCITY_NEG;
+//                y_delta_next <= BALL_VELOCITY_NEG;             
+//            end   
+//            else if(direc == 1) begin// 01
+//                x_delta_next <= BALL_VELOCITY_POS;
+//                y_delta_next <= BALL_VELOCITY_NEG;
+//            end     
+//        end 
+        if(gra_still) begin
+            if(direc==0) begin
+            x_delta_next <= BALL_VELOCITY_NEG;
+            y_delta_next <= BALL_VELOCITY_POS;
+//              randomNum = $urandom_range(0,8);
+//              if(randomNum <= 4) begin
+//                  x_delta_next = BALL_VELOCITY_NEG;
+//                  y_delta_next = BALL_VELOCITY_POS;
+//              end
+//              else begin                 
+//                  x_delta_next = BALL_VELOCITY_POS;
+//                  y_delta_next = BALL_VELOCITY_POS;
+//              end
+            end
+            else if(direc==2) begin
+            x_delta_next <= BALL_VELOCITY_NEG;
+            y_delta_next <= BALL_VELOCITY_NEG;
+            end
+            else if(direc==1) begin
+            x_delta_next <= BALL_VELOCITY_POS;
+            y_delta_next <= BALL_VELOCITY_NEG;
+            end
+        end 
         else if(y_ball_t < T_WALL_B)                   // reach top
             y_delta_next = BALL_VELOCITY_POS;   // move down
         
         else if(y_ball_b > (B_WALL_T))         // reach bottom wall
             y_delta_next = BALL_VELOCITY_NEG;   // move up
-        
-/*
+              
+        //ball bounce back to the left
         else if((X_PAD_L <= x_ball_r) && (x_ball_r <= X_PAD_R) &&
                 (y_pad_t <= y_ball_b) && (y_ball_t <= y_pad_b)) begin
                     x_delta_next = BALL_VELOCITY_NEG;
                     end
-        else if((X1_PAD_L <= x_ball_r) && (x_ball_r <= X1_PAD_R) &&
-                (y1_pad_t <= y_ball_b) && (y_ball_t <= y1_pad_b)) begin
-                    x_delta_next = BALL_VELOCITY_POS;      
-*/        
-//ball bounce back to the left
-        else if((X_PAD_L <= x_ball_r) && (x_ball_r <= X_PAD_R) &&
-                (y_pad_t <= y_ball_b) && (y_ball_t <= y_pad_b)) begin
-                    x_delta_next = BALL_VELOCITY_NEG;
-                    end
-//ball bounce back to the right
+        //ball bounce back to the right
         else if((X1_PAD_L <= x_ball_l) && (x_ball_l <= X1_PAD_R) &&
                 (y1_pad_t <= y_ball_b) && (y_ball_t <= y1_pad_b)) begin
                     x_delta_next = BALL_VELOCITY_POS;      
         end
         
-        else if(x_ball_r > X_MAX ||x_ball_l < 1) begin //30
+        else if(x_ball_r > X_MAX) begin// ||(x_ball_l < 1)) begin //30
             miss = 1'b1;
-            hit ={x_ball_r > X_MAX, x_ball_l < 1};
-            case(hit)
-                2'b01: direc = 2'b01; // player2 score , ball go to player1
-                2'b10: direc = 2'b10; // player1 score , ball go to player2
-                default : direc = 2'b00;
-            endcase
+            hit = 2'b10;
+            direc = 2'b10;
         end
+        else if(x_ball_l < 1) begin
+            miss = 1'b1;
+            hit = 2'b01;
+            direc = 2'b01;
+        end
+        //            hit ={x_ball_r > X_MAX, x_ball_l < 1};
+        //            direc ={ x_ball_r > X_MAX,x_ball_l < 1};
     end                    
     
     // output status signal for graphics 
