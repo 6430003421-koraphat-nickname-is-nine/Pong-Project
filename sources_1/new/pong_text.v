@@ -291,6 +291,10 @@ module pong_text(
         text_rgb = 12'hCCC;     // aqua background = 0FF , black = 000
         
         if(score_on) begin
+//            text_rgb = 12'hFB0;
+//            if( y[1] == 1) begin
+//                text_rgb = 12'h000;
+//            end
             char_addr = char_addr_s;
             row_addr = row_addr_s;
             bit_addr = bit_addr_s;
@@ -307,7 +311,7 @@ module pong_text(
                  
                 //heart 
                 else if((x[9:4] == 5'h0E) || (x[9:4] == 5'h19)) begin
-                    text_rgb = 12'hFDD;
+                    text_rgb = 12'hFAB;
                 end
                 else begin
                     text_rgb = 12'h0F0;// green
