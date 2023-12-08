@@ -293,9 +293,9 @@ module pong_graph(
             if(l_wall_on | t_wall_on | b_wall_on) begin
                 
                 //graph_rgb = wall_rgb;     // wall color
-                graph_rgb = 12'hF80;
+                graph_rgb = 12'hF00;
                 if(x[9:5] % 2 == 0 ) begin
-                    graph_rgb = 12'h000;
+                    graph_rgb = 12'hFFF;
                 end
             end
             else if(pad_on)

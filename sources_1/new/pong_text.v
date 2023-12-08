@@ -84,8 +84,8 @@ module pong_text(
        6'b100011 : char_addr_s = 7'h45;     // 'e'
        6'b100100 : char_addr_s = 7'h20;     // ' '
        6'b100101 : char_addr_s = 7'h3A;     // ':'
-       6'b100110 : char_addr_s = {3'b011, dig2};// tens digit of p2 score
-       6'b100111 : char_addr_s = {3'b011, dig3};// ones digit of p2 score
+       6'b100110 : char_addr_s = {3'b011, dig3};// tens digit of p2 score
+       6'b100111 : char_addr_s = {3'b011, dig2};// ones digit of p2 score
 
     endcase
     
@@ -101,6 +101,9 @@ module pong_text(
     assign row_addr_l = y[5:2]; // y[6 : 3]
     assign bit_addr_l = x[4:2]; // x[5 : 3]
     always @*
+    //4B 52 45 52 4B 20 47 41 4D 49 4E 47
+    //Krerk Gaming
+    if (y[7:6] == 0)begin
         case(x[8:5])// x[8:6]
             4'h4 :    char_addr_l = 7'h4B; // K 
             4'h5 :    char_addr_l = 7'h52; // R 
@@ -108,14 +111,40 @@ module pong_text(
             4'h7 :    char_addr_l = 7'h52; // R
             4'h8 :    char_addr_l = 7'h4B; // K
             4'h9 :    char_addr_l = 7'h00;
-            4'h10:    char_addr_l = 7'h4B; // K
-            default : char_addr_l = 7'h00; // 0
+            4'ha :    char_addr_l = 7'h47; // G
+            4'hb :    char_addr_l = 7'h41; // A
+            4'hc :    char_addr_l = 7'h4D; // M
+            4'hd :    char_addr_l = 7'h49; // I
+            4'he :    char_addr_l = 7'h4e; // N
+            4'hf :    char_addr_l = 7'h47; // G
+            default : char_addr_l = 7'h00; // " "
+          endcase
+    end
+    else if(y[7:6] == 1) begin
+        // 50 52 45 53 45 4E 54 53
+        // Presents
+        case(x[8:5])// x[8:6]
+            4'h4 :    char_addr_l = 7'h00; //  
+            4'h5 :    char_addr_l = 7'h00; // 
+            4'h6 :    char_addr_l = 7'h50; // P
+            4'h7 :    char_addr_l = 7'h52; // R
+            4'h8 :    char_addr_l = 7'h45; // E
+            4'h9 :    char_addr_l = 7'h53; // S
+            4'ha :    char_addr_l = 7'h45; // E
+            4'hb :    char_addr_l = 7'h4e; // N
+            4'hc :    char_addr_l = 7'h54; // T
+            4'hd :    char_addr_l = 7'h53; // S
+            4'he :    char_addr_l = 7'h00; // 
+            4'hf :    char_addr_l = 7'h00; // 
+            default : char_addr_l = 7'h00; // " "
+          endcase
+    end
 //            3'o2 :    char_addr_l = 7'h4B; // K 
 //            3'o3 :    char_addr_l = 7'h52; // R 
 //            3'o4 :    char_addr_l = 7'h45; // E 
 //            3'o5 :    char_addr_l = 7'h52; // R
 //            default : char_addr_l = 7'h4B; // K 
-        endcase
+       
     
     // --------------------------------------------------------------------------
     // rule region
@@ -258,7 +287,18 @@ module pong_text(
             row_addr = row_addr_s;
             bit_addr = bit_addr_s;
             if(ascii_bit)
-                text_rgb = 12'h0FF; // aqua background
+                //text_rgb = 12'h0FF;
+                if(x[9:4] <= 12) begin
+                    text_rgb = 12'hF00; // aqua background
+                end
+                
+                else if(x[9:4] >= 28) begin
+                    text_rgb = 12'h00F;
+                end
+                 
+                else begin
+                    text_rgb = 12'h0F0;
+                end
                 //text_rgb = 12'h111;
         end
         
