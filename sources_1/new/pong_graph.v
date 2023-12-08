@@ -104,6 +104,7 @@ module pong_graph(
             x_delta_reg <= 10'h002;
             y_delta_reg <= 10'h002;
             y1_pad_reg <= 204;
+            direc <= 0;
         end
         else begin
             y_pad_reg <= y_pad_next;
@@ -204,34 +205,19 @@ module pong_graph(
         miss = 1'b0;
         x_delta_next = x_delta_reg;
         y_delta_next = y_delta_reg;
-//        if(gra_still) begin
-//       //direc = { x_ball_r > X_MAX,x_ball_l < 1};
-//            if(direc == 0) begin
-//                x_delta_next <= BALL_VELOCITY_NEG;
-//                y_delta_next <= BALL_VELOCITY_POS;    
-//            end
-//            else if(direc == 2) begin //10
-//                x_delta_next <= BALL_VELOCITY_NEG;
-//                y_delta_next <= BALL_VELOCITY_NEG;             
-//            end   
-//            else if(direc == 1) begin// 01
-//                x_delta_next <= BALL_VELOCITY_POS;
-//                y_delta_next <= BALL_VELOCITY_NEG;
-//            end     
-//        end 
         if(gra_still) begin
             if(direc==0) begin
-            x_delta_next <= BALL_VELOCITY_NEG;
-            y_delta_next <= BALL_VELOCITY_POS;
-//              randomNum = $urandom_range(0,8);
-//              if(randomNum <= 4) begin
-//                  x_delta_next = BALL_VELOCITY_NEG;
-//                  y_delta_next = BALL_VELOCITY_POS;
-//              end
-//              else begin                 
-//                  x_delta_next = BALL_VELOCITY_POS;
-//                  y_delta_next = BALL_VELOCITY_POS;
-//              end
+                randomNum = $urandom_range(0,7);
+//            x_delta_next <= BALL_VELOCITY_NEG;
+//            y_delta_next <= BALL_VELOCITY_POS;
+                if(randomNum <= 4) begin
+                    x_delta_next = BALL_VELOCITY_NEG;
+                    y_delta_next = BALL_VELOCITY_POS;
+                end
+                else begin                 
+                    x_delta_next = BALL_VELOCITY_POS;
+                    y_delta_next = BALL_VELOCITY_POS;
+                end
             end
             else if(direc==2) begin
             x_delta_next <= BALL_VELOCITY_NEG;
@@ -241,6 +227,7 @@ module pong_graph(
             x_delta_next <= BALL_VELOCITY_POS;
             y_delta_next <= BALL_VELOCITY_NEG;
             end
+            direc = 0;
         end 
         else if(y_ball_t < T_WALL_B)                   // reach top
             y_delta_next = BALL_VELOCITY_POS;   // move down
